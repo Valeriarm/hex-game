@@ -1,0 +1,4 @@
+./baseline*
+./HexReferee*
+./*.sh
+RomdomHex.py
