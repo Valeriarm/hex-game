@@ -1,0 +1,5 @@
+tmux new-session -s name # create session
+tmux attach-session -t name # enter session
+ctrl+b d                    #exit session
+ctrl+b [                    # check previous cmd output
+tmux list-sessions          # list sessions

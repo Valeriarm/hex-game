@@ -96,7 +96,7 @@ def update_board(d_board, d_pos, d_value, d_size):
 			# out of range
 			raise Exception
 	except Exception:
-		# print("# Error: invalid position.")
+		print("# Error: invalid position.")
 		sys.exit(2)
 
 def strategy_random(d_board, d_size):
@@ -125,65 +125,64 @@ VALUE_BLUE = -1 # from integer side to integer side
 '''
 
 #========= The heuristic function and helper functions =========
-'''
-def closest_position(pos_L, pos_N):
-	(pos_L_return, pos_N_return) = (pos_L, pos_N)
-        
-	# while( not check_pos(pos_L, pos_L)): 
-		# update position => nearby location
-	return (pos_L_return, pos_N_return)
+##def closest_position(pos_L, pos_N):
+####	(pos_L_return, pos_N_return) = (pos_L, pos_N)
+##        
+##	while( not check_pos(pos_L, pos_L)):
+##		# update position => nearby location
+##	return (pos_L_return, pos_N_return)
+##
+##def central_unoccupied_pos(board, size):
+##        central_pos = int(d_size / 2)
+##	return closest_position(central_pos, central_pos)
+##
+##def closeness_to_connect(board, size, which_player):
+##        # the closer to a straight-cut, the better
+##        pass
+##
+##def num_potential_path(board, size, which_player):
+##        # the flexibility
+##        pass
 
-def central_unoccupied_pos(board, size):
-        central_pos = int(d_size / 2)
-	return closest_position(central_pos, central_pos)
+##def num_path_change(old_board_result, new_board):
+##        # old_board_result: num_potential_path(old_board)
+##        # positive: more paths for red and less for blue
+##        # 0: cancel out
+##        # negative: more paths for blud and less for red
+##        return num_potential_path(new_board) - old_board_result
 
-def closeness_to_connect(board, size, which_player):
-        # the closer to a straight-cut, the better
-        pass
-
-def num_potential_path(board, size, which_player):
-        # the flexibility
-        pass
-
-def num_path_change(old_board_result, new_board):
-        # old_board_result: num_potential_path(old_board)
-        # positive: more paths for red and less for blue
-        # 0: cancel out
-        # negative: more paths for blud and less for red
-        return num_potential_path(new_board) - old_board_result
-'''
 def heuristic_function(current_board):
         return 1
 
 #========= The Minimax method with alpha-beta pruning =========
 # http://aima.cs.berkeley.edu/python/games.html
 def max_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, size, pos = None):
-        
+        print("in max_value_pos")
         if (depth > MAX_DEPTH or len(empty_position_dict) == 0):
-                return (heuristic_function(board), pos)
-        
+            return (heuristic_function(board), pos)
+                 
         v = -1.0e40 # neg infinity
         
-        for potential_pos in empty_position_dict:
+        for potential_pos in list(empty_position_dict):
                 update_board(board, potential_pos, which_player, size)
-                pos = empty_position_dict.pop(potential_pos, pos)
-                v = max(v, min_value_pos(board, empty_position_dict, alpha, beta, depth+1, -1 * which_player, size, pos))
+                pos = empty_position_dict.pop(potential_pos)
+                v = max(v, min_value_pos(board, empty_position_dict, alpha, beta, depth+1, -1 * which_player, size, pos)[0])
                 if v >= beta:
                         return (v, pos)
                 alpha = max(alpha, v)
         return (v, pos)
 
-def min_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, pop = None):
+def min_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, size, pos = None):
         
         if (depth > MAX_DEPTH or len(empty_position_dict) == 0):
                 return (heuristic_function(board), pos)
         
         v = 1.0e40 # pos infinity
         
-        for potential_pos in empty_position_dict:
+        for potential_pos in list(empty_position_dict):
                 update_board(board, potential_pos, which_player, size)
                 pos = empty_position_dict.pop(potential_pos)
-                v = min(v, max_value_pos(board, empty_position_dict, alpha, beta, depth+1, -1 * which_player, size, pos))
+                v = min(v, max_value_pos(board, empty_position_dict, alpha, beta, depth+1, -1 * which_player, size, pos)[0])
                 if v <= alpha:
                         return (v, pos)
                 beta = min(beta, v)
@@ -191,18 +190,16 @@ def min_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, 
         return (v, pos)
 
 def alpha_beta_game_tree_search(board, size, empty_position_dict, which_player):
-        (_, pos) =  min_value_pos(board, empty_position_dict, -1.0e40, 1.0e40, 0, which_player)
+        (_, pos) =  min_value_pos(board, empty_position_dict, -1.0e40, 1.0e40, 0, which_player, size)
         return pos
 
 #========= The all-in-one function =========
 
 def my_strategy(board, size, empty_pos_dict, which_player):
 	if len(empty_pos_dict)==0:
-		# END OF GAME
-		# print("# Game Over.")
-		sys.exit(0)
-
-        return alpha_beta_game_tree_search(board, size, empty_pos_dict, which_player)
+                sys.exit(0)
+	pos = alpha_beta_game_tree_search(board, size, empty_pos_dict, which_player)
+	return pos
 
 ################ End of My Implementation #####################
 
@@ -268,8 +265,8 @@ def main(argv):
 
 	
 ############ start of extra variable declaration ############
-        empty_spot_dict = {}
-        for i in range(arg_size):
+	empty_spot_dict = {}
+	for i in range(arg_size):
                 for j in range(arg_size):
                         empty_spot_dict[(i,j)] = 0
 ############  end of extra variable declaratio   ############
@@ -277,37 +274,34 @@ def main(argv):
 	while(True):
                 if arg_player=="RED":
 			# RED playes first
-##			c_pos = strategy_random(hex_board, arg_size)
-			c_pos = my_strategy(hex_board, arg_size, empty_spot_dict, RED_PLAYER)
-			c_inp = pos_to_inp(c_pos, arg_size)
-			print(c_inp)
-		else:
+                        c_pos = my_strategy(hex_board, arg_size, empty_spot_dict, RED_PLAYER)
+                        c_inp = pos_to_inp(c_pos, arg_size)
+                        print(c_inp)
+                else:
 			# wait for opponent
-			c_inp = input()
-			c_pos = inp_to_pos(c_inp, arg_size)
+                        c_inp = input()
+                        c_pos = inp_to_pos(c_inp, arg_size)
 		# RED MOVES
-		update_board(hex_board, c_pos, VALUE_RED, arg_size)
+                update_board(hex_board, c_pos, VALUE_RED, arg_size)
 		# added line
-		empty_spot_dict.pop(c_pos)
-		if arg_debug:
-			print_board(hex_board, arg_size)
-
-		if arg_player=="BLUE":
+                empty_spot_dict.pop(c_pos)
+                if arg_debug:
+                        print_board(hex_board, arg_size)
+                if arg_player=="BLUE":
 			# BLUE playes
-##			c_pos = strategy_random(hex_board, arg_size)
-			c_pos = my_strategy(hex_board, arg_size, empty_spot_dict, BLUE_PLAYER)
-			c_inp = pos_to_inp(c_pos, arg_size)
-			print(c_inp)
-		else:
-			# wait for opponent
-			c_inp = input()
-			c_pos = inp_to_pos(c_inp, arg_size)
-		# BLUE MOVES
-		update_board(hex_board, c_pos, VALUE_BLUE, arg_size)
+                        c_pos = my_strategy(hex_board, arg_size, empty_spot_dict, BLUE_PLAYER)
+                        c_inp = pos_to_inp(c_pos, arg_size)
+                        print(c_inp)
+                else:
+                        # wait for opponent
+                        c_inp = input()
+                        c_pos = inp_to_pos(c_inp, arg_size)
+                # BLUE MOVES
+                update_board(hex_board, c_pos, VALUE_BLUE, arg_size)
                 # added line
-		empty_spot_dict.pop(c_pos)
-		if arg_debug:
-			print_board(hex_board, arg_size)
+                empty_spot_dict.pop(c_pos)
+                if arg_debug:
+                        print_board(hex_board, arg_size)
 
 
 if __name__=="__main__":
