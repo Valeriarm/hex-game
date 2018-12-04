@@ -26,10 +26,7 @@ ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 LETTER2INT = {ALPHABET[i]:i for i in range(26)}
 VALUE_EMPTY = 0
 VALUE_RED = 1 # from letter side to letter side
-RED_PLAYER = 1
 VALUE_BLUE = -1 # from integer side to integer side
-BLUE_PLAYER = -1
-MAX_DEPTH = 3
 ############ start of extra global variable declaration ############
 
 ############  end of extra global variable declaratio   ############
@@ -123,11 +120,14 @@ VALUE_EMPTY = 0
 VALUE_RED = 1 # from letter side to letter side
 VALUE_BLUE = -1 # from integer side to integer side
 '''
+RED_PLAYER = 1
+BLUE_PLAYER = -1
+MAX_DEPTH = 3
 
 #========= The heuristic function and helper functions =========
 ##def closest_position(pos_L, pos_N):
 ####	(pos_L_return, pos_N_return) = (pos_L, pos_N)
-##        
+##
 ##	while( not check_pos(pos_L, pos_L)):
 ##		# update position => nearby location
 ##	return (pos_L_return, pos_N_return)
@@ -160,9 +160,9 @@ def max_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, 
         print("in max_value_pos")
         if (depth > MAX_DEPTH or len(empty_position_dict) == 0):
             return (heuristic_function(board), pos)
-                 
+
         v = -1.0e40 # neg infinity
-        
+
         for potential_pos in list(empty_position_dict):
                 update_board(board, potential_pos, which_player, size)
                 pos = empty_position_dict.pop(potential_pos)
@@ -173,12 +173,12 @@ def max_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, 
         return (v, pos)
 
 def min_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, size, pos = None):
-        
+        print("in max_value_pos")
         if (depth > MAX_DEPTH or len(empty_position_dict) == 0):
                 return (heuristic_function(board), pos)
-        
+
         v = 1.0e40 # pos infinity
-        
+
         for potential_pos in list(empty_position_dict):
                 update_board(board, potential_pos, which_player, size)
                 pos = empty_position_dict.pop(potential_pos)
@@ -263,14 +263,14 @@ def main(argv):
 	# initialize the game
 	hex_board = [[VALUE_EMPTY for j in range(arg_size)] for i in range(arg_size)]
 
-	
+
 ############ start of extra variable declaration ############
 	empty_spot_dict = {}
 	for i in range(arg_size):
                 for j in range(arg_size):
                         empty_spot_dict[(i,j)] = 0
 ############  end of extra variable declaratio   ############
-        
+
 	while(True):
                 if arg_player=="RED":
 			# RED playes first
