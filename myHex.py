@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 '''
+Frame coded by:
 @author: Yanju Chen
 @contact: yanju@cs.ucsb.edu
 @file: RandomHex.py
@@ -8,6 +9,9 @@
 @description:
 This is Baseline#1 of UCSB CS165A Fall 2018 Machine Problem 2. The script implements basic random
 algorithm for playing Hex. Please read the attached readme.txt for detailed usage.
+
+Editted by:
+Nuan Wen
 '''
 
 from __future__ import print_function
@@ -146,9 +150,15 @@ def alphabeta_search(state, d=4, cutoff_test=None, eval_fn=None):
                            lambda ((a, s)): min_value(s, -infinity, infinity, 0))
     return action
 '''
+def closest_position(pos_L, pos_N):
+	(pos_L_return, pos_N_return) = (pos_L, pos_N)
+	while( not check_pos(pos_L, pos_L)):
+		# update position => nearby location
+	return (pos_L_return, pos_N_return)
 
 def central_unoccupied_pos(d_board, d_size):
-        pass
+        central_pos = int(d_size / 2)
+		return closest_position(central_pos, central_pos)
 
 def max_path_len(d_board, d_size, which_player):
         # the closer to a straight-cut, the better
