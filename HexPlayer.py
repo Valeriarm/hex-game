@@ -136,15 +136,17 @@ BLUE_PLAYER = -1
 MAX_DEPTH = 4
 
 #========= The heuristic function and helper functions =========
-def neighbours(pos):
+def neighbours(pos, size):
+    # i is letter and j is number
     (i, j) = pos
     neighbour_list = []
-    possible_pos_list = [(), (), (), (), (), ()]
+    possible_pos_list = [(i-1, j), (i-1, j+1), (i, j-1), (i, j+1), (i+1, j-1), (i+1, j)]
     for possible_pos in possible_pos_list:
-        if (check_pos(possible_pos_list)):
+        if (check_pos(possible_pos, size)):
             neighbour_list.append(possible_pos)
     return neighbour_list
 
+'''
 def central_unoccupied_pos(board, size):
     central_pos = int(size / 2)
     return neighbours((central_pos, central_pos))
@@ -163,10 +165,21 @@ def evaluate_neighbours(neighbours_list, which_player, board_original):
         else:
             score += 1
     return score
+'''
 
 def num_potential_connection_spot(board, size):
     # the average flexibility
-    pass
+    score = 0
+    for i in range(size):
+        for j in range(size):
+            current_player = board[i][j]
+            if current_player != 0:
+                current_enemy = -1 * current_player
+                neighbours_list = neighbours((i,j), size)
+                for n in neighbours_list:
+                    if board[n[0]][n[1]] == 0:
+                        score += current_player
+    return score
 
 def heuristic_function(current_board, size):
     '''
@@ -183,7 +196,7 @@ def max_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, 
     # print("in max_value_pos with current pos:", pos)
     if (depth > MAX_DEPTH or len(empty_position_dict) == 0):
         # print("terminate at 11 with pos:", pos)
-        return (heuristic_function(board, size, red_pos_list), pos)
+        return (heuristic_function(board, size), pos)
 
     v = -1.0e40 # neg infinity
 
@@ -209,7 +222,7 @@ def min_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, 
     # print("in min_value_pos with current pos:", pos)
     if (depth > MAX_DEPTH or len(empty_position_dict) == 0):
         # print("terminate at 21 with pos:", pos)
-        return (heuristic_function(board), pos)
+        return (heuristic_function(board, size), pos)
 
     v = 1.0e40 # pos infinity
 
@@ -339,7 +352,6 @@ def main(argv):
         # print("after updating")
 	# added lines
         empty_spot_dict.pop(c_pos)
-        red_pos_list.append(c_pos)
 
         if arg_debug:
             print_board(hex_board, arg_size)
@@ -359,7 +371,6 @@ def main(argv):
         update_board(hex_board, c_pos, VALUE_BLUE, arg_size)
         # added lines
         empty_spot_dict.pop(c_pos)
-        blue_pos_list.append(c_pos)
 
         if arg_debug:
             print_board(hex_board, arg_size)
