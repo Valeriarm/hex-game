@@ -133,7 +133,7 @@ VALUE_BLUE = -1 # from integer side to integer side
 '''
 RED_PLAYER = 1
 BLUE_PLAYER = -1
-MAX_DEPTH = 3
+MAX_DEPTH = 2
 
 #========= The heuristic function and helper functions =========
 ##def closest_position(pos_L, pos_N):
@@ -294,6 +294,7 @@ def main(argv):
         if arg_player=="RED":
             # RED playes first
             c_pos = my_strategy(hex_board, arg_size, empty_spot_dict, RED_PLAYER)
+			print("c_pos chosen by RED following my strategy:", c_pos)
             c_inp = pos_to_inp(c_pos, arg_size)
             print(c_inp)
         else:
@@ -312,6 +313,7 @@ def main(argv):
         if arg_player=="BLUE":
 	    # BLUE playes
             c_pos = my_strategy(hex_board, arg_size, empty_spot_dict, BLUE_PLAYER)
+			print("c_pos chosen by BLUE following my strategy:", c_pos)
             c_inp = pos_to_inp(c_pos, arg_size)
             print(c_inp)
         else:
