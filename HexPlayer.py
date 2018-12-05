@@ -146,27 +146,6 @@ def neighbours(pos, size):
             neighbour_list.append(possible_pos)
     return neighbour_list
 
-'''
-def central_unoccupied_pos(board, size):
-    central_pos = int(size / 2)
-    return neighbours((central_pos, central_pos))
-
-def closeness_to_connect(board, size, which_player):
-    # the closer to a straight-cut, the better
-    pass
-
-def evaluate_neighbours(neighbours_list, which_player, board_original):
-    score = 0
-    for neighbour_pos in neighbours_list:
-        (i, j) = neighbour_pos
-        neighbour_value = board_original[i][j]
-        if (neighbour_value == -1 * which_player):
-            score -= 1
-        else:
-            score += 1
-    return score
-'''
-
 def num_potential_connection_spot(board, size):
     # the average flexibility
     score = 0
@@ -179,6 +158,7 @@ def num_potential_connection_spot(board, size):
                 for n in neighbours_list:
                     if board[n[0]][n[1]] == 0:
                         score += current_player
+	print("heuristic score:", score)
     return score
 
 def heuristic_function(current_board, size):
