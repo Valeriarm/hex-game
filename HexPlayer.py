@@ -168,7 +168,7 @@ def heuristic_function(current_board):
 #========= The Minimax method with alpha-beta pruning =========
 # http://aima.cs.berkeley.edu/python/games.html
 def max_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, size, pos = None):
-    print("in max_value_pos")
+    print("in max_value_pos with current pos:", pos)
     if (depth > MAX_DEPTH or len(empty_position_dict) == 0):
         print("terminate at 11 with pos:", pos)
         return (heuristic_function(board), pos)
@@ -192,7 +192,7 @@ def max_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, 
     return (v, pos)
 
 def min_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, size, pos = None):
-    print("in min_value_pos")
+    print("in min_value_pos with current pos:", pos)
     if (depth > MAX_DEPTH or len(empty_position_dict) == 0):
         print("terminate at 21 with pos:", pos)
         return (heuristic_function(board), pos)
