@@ -183,9 +183,9 @@ def max_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, 
             print("terminate at 12 with pos:", pos)
             return (v, pos)
         empty_position_dict.pop(potential_pos)
-		v_from_min, pos_from_min = min_value_pos(board, empty_position_dict, alpha, beta, depth+1, -1 * which_player, size, potential_pos)
+        v_from_min, pos_from_min = min_value_pos(board, empty_position_dict, alpha, beta, depth+1, -1 * which_player, size, potential_pos)
         v = max(v, v_from_min)
-		pos = pos_from_min
+        pos = pos_from_min
         if v >= beta:
             print("terminate at 13 with pos:", pos)
             return (v, pos)
@@ -209,9 +209,9 @@ def min_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, 
             print("terminate at 22 with pos:", pos)
             return (v, pos)
         empty_position_dict.pop(potential_pos)
-		v_from_max, pos_from_max = max_value_pos(board, empty_position_dict, alpha, beta, depth+1, -1 * which_player, size, potential_pos)
+        v_from_max, pos_from_max = max_value_pos(board, empty_position_dict, alpha, beta, depth+1, -1 * which_player, size, potential_pos)
         v = min(v, v_from_max)
-		pos = pos_from_max
+        pos = pos_from_max
         if v <= alpha:
             print("terminate at 23 with pos:", pos)
             return (v, pos)
@@ -230,7 +230,7 @@ def alpha_beta_game_tree_search(board, size, empty_position_dict, which_player):
 def my_strategy(board, size, empty_pos_dict, which_player):
     if len(empty_pos_dict)==0:
         sys.exit(0)
-    temp_board = list(board)
+    temp_board = copy.deepcopy(board)
     temp_empty_pos_dict = copy.deepcopy(empty_pos_dict)
     return alpha_beta_game_tree_search(temp_board, size, temp_empty_pos_dict, which_player)
 
@@ -317,7 +317,12 @@ def main(argv):
             c_pos = inp_to_pos(c_inp, arg_size)
 
         # RED MOVES
+        print("before updating")
+        print()
+        print(hex_board)
+        print(c_pos)
         update_board(hex_board, c_pos, VALUE_RED, arg_size)
+        print("after updating")
 	# added line
         empty_spot_dict.pop(c_pos)
 
