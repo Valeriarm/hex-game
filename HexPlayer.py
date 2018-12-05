@@ -168,47 +168,57 @@ def heuristic_function(current_board):
 #========= The Minimax method with alpha-beta pruning =========
 # http://aima.cs.berkeley.edu/python/games.html
 def max_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, size, pos = None):
-    # print("in max_value_pos")
+    print("in max_value_pos")
     if (depth > MAX_DEPTH or len(empty_position_dict) == 0):
+        print("terminate at 11 with pos:", pos)
         return (heuristic_function(board), pos)
 
     v = -1.0e40 # neg infinity
 
     for potential_pos in list(empty_position_dict):
-        # print("potential_pos_in_max:", potential_pos)
-        # print("board_in_max:", board)
-        # print("empty_position_dict.keys() in max:", empty_position_dict.keys())
+        print("potential_pos_in_max:", potential_pos)
+        print("board_in_max:", board)
+        print("empty_position_dict.keys() in max:", empty_position_dict.keys())
         if not try_update_board(board, potential_pos, which_player, size):
+            print("terminate at 12 with pos:", pos)
             return (v, pos)
-        pos = empty_position_dict.pop(potential_pos)
-        v = max(v, min_value_pos(board, empty_position_dict, alpha, beta, depth+1, -1 * which_player, size, pos)[0])
+        empty_position_dict.pop(potential_pos)
+        v = max(v, min_value_pos(board, empty_position_dict, alpha, beta, depth+1, -1 * which_player, size, potential_pos)[0])
         if v >= beta:
+            print("terminate at 13 with pos:", pos)
             return (v, pos)
         alpha = max(alpha, v)
+    print("terminate at 14 with pos:", pos)
     return (v, pos)
 
 def min_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, size, pos = None):
-    # print("in min_value_pos")
+    print("in min_value_pos")
     if (depth > MAX_DEPTH or len(empty_position_dict) == 0):
+        print("terminate at 21 with pos:", pos)
         return (heuristic_function(board), pos)
 
     v = 1.0e40 # pos infinity
 
     for potential_pos in list(empty_position_dict):
-        # print("potential_pos_in_min:", potential_pos)
-        # print("board_in_min:", board)
-        # print("empty_position_dict.keys() in min:", empty_position_dict.keys())
+        print("potential_pos_in_min:", potential_pos)
+        print("board_in_min:", board)
+        print("empty_position_dict.keys() in min:", empty_position_dict.keys())
         if not try_update_board(board, potential_pos, which_player, size):
+            print("terminate at 22 with pos:", pos)
             return (v, pos)
-        pos = empty_position_dict.pop(potential_pos)
-        v = min(v, max_value_pos(board, empty_position_dict, alpha, beta, depth+1, -1 * which_player, size, pos)[0])
+        empty_position_dict.pop(potential_pos)
+        v = min(v, max_value_pos(board, empty_position_dict, alpha, beta, depth+1, -1 * which_player, size, potential_pos)[0])
         if v <= alpha:
+            print("terminate at 23 with pos:", pos)
             return (v, pos)
         beta = min(beta, v)
+    print("terminate at 24 with pos:",pos)
     return (v, pos)
 
 def alpha_beta_game_tree_search(board, size, empty_position_dict, which_player):
-    (_, pos) =  min_value_pos(board, empty_position_dict, -1.0e40, 1.0e40, 0, which_player, size)
+    (v, pos) =  min_value_pos(board, empty_position_dict, -1.0e40, 1.0e40, 0, which_player, size)
+    print("pos:", pos)
+    print("v:", v)
     return pos
 
 #========= The all-in-one function =========
@@ -294,7 +304,7 @@ def main(argv):
         if arg_player=="RED":
             # RED playes first
             c_pos = my_strategy(hex_board, arg_size, empty_spot_dict, RED_PLAYER)
-			print("c_pos chosen by RED following my strategy:", c_pos)
+            print("c_pos chosen by RED following my strategy:", c_pos)
             c_inp = pos_to_inp(c_pos, arg_size)
             print(c_inp)
         else:
@@ -313,7 +323,7 @@ def main(argv):
         if arg_player=="BLUE":
 	    # BLUE playes
             c_pos = my_strategy(hex_board, arg_size, empty_spot_dict, BLUE_PLAYER)
-			print("c_pos chosen by BLUE following my strategy:", c_pos)
+            print("c_pos chosen by BLUE following my strategy:", c_pos)
             c_inp = pos_to_inp(c_pos, arg_size)
             print(c_inp)
         else:
