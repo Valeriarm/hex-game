@@ -189,8 +189,10 @@ def max_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, 
             return (v, pos)
         empty_position_dict.pop(potential_pos)
         v_from_min, pos_from_min = min_value_pos(board, empty_position_dict, alpha, beta, depth+1, -1 * which_player, size, potential_pos)
-        v = max(v, v_from_min)
-        pos = pos_from_min
+		if (v_from_min > v):
+			v = v_from_min
+			pos = pos_from_min
+		# v = max(v, v_from_min)
         if v >= beta:
             print("terminate at 13 with v and pos:", v, pos)
             return (v, pos)
@@ -215,8 +217,10 @@ def min_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, 
             return (v, pos)
         empty_position_dict.pop(potential_pos)
         v_from_max, pos_from_max = max_value_pos(board, empty_position_dict, alpha, beta, depth+1, -1 * which_player, size, potential_pos)
-        v = min(v, v_from_max)
-        pos = pos_from_max
+		if (v_from_max < v):
+			v = v_from_max
+			pos = pos_from_max
+		# v = min(v, v_from_max)
         if v <= alpha:
             print("terminate at 23 with v and pos:", v, pos)
             return (v, pos)
