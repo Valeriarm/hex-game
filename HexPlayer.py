@@ -164,22 +164,22 @@ def evaluate_neighbours(neighbours_list, which_player, board_original):
             score += 1
     return score
 
-def num_potential_connection_spot(board, size, which_player):
+def num_potential_connection_spot(board, size):
     # the average flexibility
     pass
 
 def heuristic_function(current_board, size):
     '''
-    things I want to consider: 
+    things I want to consider:
     1. average flexibity RED is MAX
     2. ??
     '''
-    h1 = num_potential_connection_spot(current_board, size, RED_PLAYER) - num_potential_connection_spot(current_board, size, BLUE_PLAYER)
+    h1 = num_potential_connection_spot(current_board, size)
     return h1
 
 #========= The Minimax method with alpha-beta pruning =========
 # http://aima.cs.berkeley.edu/python/games.html
-def max_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, size, pos = None, red_pos_list, blue_pos_list):
+def max_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, size, pos = None):
     # print("in max_value_pos with current pos:", pos)
     if (depth > MAX_DEPTH or len(empty_position_dict) == 0):
         # print("terminate at 11 with pos:", pos)
@@ -195,7 +195,7 @@ def max_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, 
             # print("terminate at 12 with pos:", pos)
             return (v, pos)
         empty_position_dict.pop(potential_pos)
-        v_from_min, pos_from_min = min_value_pos(board, empty_position_dict, alpha, beta, depth+1, -1 * which_player, size, potential_pos, red_pos_list, blue_pos_list)
+        v_from_min, pos_from_min = min_value_pos(board, empty_position_dict, alpha, beta, depth+1, -1 * which_player, size, potential_pos)
         v = max(v, v_from_min)
         pos = pos_from_min
         if v >= beta:
@@ -205,7 +205,7 @@ def max_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, 
     # print("terminate at 14 with pos:", pos)
     return (v, pos)
 
-def min_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, size, pos = None, red_pos_list, blue_pos_list):
+def min_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, size, pos = None):
     # print("in min_value_pos with current pos:", pos)
     if (depth > MAX_DEPTH or len(empty_position_dict) == 0):
         # print("terminate at 21 with pos:", pos)
@@ -221,7 +221,7 @@ def min_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, 
             # print("terminate at 22 with pos:", pos)
             return (v, pos)
         empty_position_dict.pop(potential_pos)
-        v_from_max, pos_from_max = max_value_pos(board, empty_position_dict, alpha, beta, depth+1, -1 * which_player, size, potential_pos, red_pos_list, blue_pos_list)
+        v_from_max, pos_from_max = max_value_pos(board, empty_position_dict, alpha, beta, depth+1, -1 * which_player, size, potential_pos)
         v = min(v, v_from_max)
         pos = pos_from_max
         if v <= alpha:
@@ -231,20 +231,20 @@ def min_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, 
     # print("terminate at 24 with pos:",pos)
     return (v, pos)
 
-def alpha_beta_game_tree_search(board, size, empty_position_dict, which_player, red_pos_list, blue_pos_list):
-    (v, pos) =  min_value_pos(board, empty_position_dict, -1.0e40, 1.0e40, 0, which_player, size, red_pos_list, blue_pos_list)
+def alpha_beta_game_tree_search(board, size, empty_position_dict, which_player):
+    (v, pos) =  min_value_pos(board, empty_position_dict, -1.0e40, 1.0e40, 0, which_player, size)
     # print("pos:", pos)
     # print("v:", v)
     return pos
 
 #========= The all-in-one function =========
 
-def my_strategy(board, size, empty_pos_dict, which_player, red_pos_list, blue_pos_list):
+def my_strategy(board, size, empty_pos_dict, which_player):
     if len(empty_pos_dict)==0:
         sys.exit(0)
     temp_board = copy.deepcopy(board)
     temp_empty_pos_dict = copy.deepcopy(empty_pos_dict)
-    return alpha_beta_game_tree_search(temp_board, size, temp_empty_pos_dict, which_player, red_pos_list, blue_pos_list)
+    return alpha_beta_game_tree_search(temp_board, size, temp_empty_pos_dict, which_player)
 
 ################ End of My Implementation #####################
 
@@ -314,14 +314,14 @@ def main(argv):
     for i in range(arg_size):
         for j in range(arg_size):
                 empty_spot_dict[(i,j)] = VALUE_EMPTY
-    red_pos_list = []
-    blue_pos_list = []
+    # red_pos_list = []
+    # blue_pos_list = []
 ############  end of extra variable declaratio   ############
     while(True):
 
         if arg_player=="RED":
             # RED playes first
-            c_pos = my_strategy(hex_board, arg_size, empty_spot_dict, RED_PLAYER, red_pos_list, blue_pos_list)
+            c_pos = my_strategy(hex_board, arg_size, empty_spot_dict, RED_PLAYER)
             # print("c_pos chosen by RED following my strategy:", c_pos)
             c_inp = pos_to_inp(c_pos, arg_size)
             print(c_inp)
@@ -346,7 +346,7 @@ def main(argv):
 
         if arg_player=="BLUE":
 	    # BLUE playes
-            c_pos = my_strategy(hex_board, arg_size, empty_spot_dict, BLUE_PLAYER, red_pos_list, blue_pos_list)
+            c_pos = my_strategy(hex_board, arg_size, empty_spot_dict, BLUE_PLAYER)
             # print("c_pos chosen by BLUE following my strategy:", c_pos)
             c_inp = pos_to_inp(c_pos, arg_size)
             print(c_inp)
@@ -360,7 +360,7 @@ def main(argv):
         # added lines
         empty_spot_dict.pop(c_pos)
         blue_pos_list.append(c_pos)
-        
+
         if arg_debug:
             print_board(hex_board, arg_size)
 
