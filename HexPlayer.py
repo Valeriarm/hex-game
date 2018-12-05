@@ -225,8 +225,11 @@ def min_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, 
     return (v, pos)
 
 def alpha_beta_game_tree_search(board, size, empty_position_dict, which_player):
-    (v, pos) =  min_value_pos(board, empty_position_dict, -1.0e40, 1.0e40, 0, which_player, size)
-    print("pos:", pos)
+	if which_player == RED_PLAYER:
+		(v, final) =  max_value_pos(board, empty_position_dict, -1.0e40, 1.0e40, 0, which_player, size)
+	else:
+		(v, final) =  min_value_pos(board, empty_position_dict, -1.0e40, 1.0e40, 0, which_player, size)
+	print("pos:", pos)
     print("v:", v)
     return pos
 
