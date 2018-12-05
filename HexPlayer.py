@@ -133,7 +133,7 @@ VALUE_BLUE = -1 # from integer side to integer side
 '''
 RED_PLAYER = 1
 BLUE_PLAYER = -1
-MAX_DEPTH = 5
+MAX_DEPTH = 8
 
 #========= The heuristic function and helper functions =========
 def neighbours(pos, size):
@@ -161,7 +161,8 @@ def num_potential_connection_spot(board, size):
     print("heuristic score:", score)
     return score
 
-def straightness(board, size):
+
+def straightness_row(board, size):
     score = 0
     red_num_occupancy_row = []
     blue_num_occupancy_row = []
@@ -179,6 +180,81 @@ def straightness(board, size):
         elif red_count > (size // 2):
             score += 5
         elif blue_count > (size // 4 * 3):
+            score -= 5
+        elif blue_count > (size // 2):
+            score -= 3
+        red_count = 0
+        blue_count = 0
+    return score
+
+def straightness_col(board, size):
+    score = 0
+    red_num_occupancy_row = []
+    blue_num_occupancy_row = []
+    red_count = 0
+    blue_count = 0
+    for i in range(size):
+        for j in range(size):
+            value = board[j][i]
+            if value == RED_PLAYER:
+                red_count += 1
+            elif value == BLUE_PLAYER:
+                blue_count += 1
+        if red_count > (size//4 * 3):
+            score += 5
+        elif red_count > (size // 2):
+            score += 3
+        elif blue_count > (size // 4 * 3):
+            score -= 10
+        elif blue_count > (size // 2):
+            score -= 5
+        red_count = 0
+        blue_count = 0
+    return score
+
+def straightness_rows(board, size):
+    score = 0
+    red_num_occupancy_row = []
+    blue_num_occupancy_row = []
+    red_count = 0
+    blue_count = 0
+    for i in range(1, size-1):
+        for j in range(size):
+            value = board[i][j]
+            if value == RED_PLAYER:
+                red_count += 1
+            elif value == BLUE_PLAYER:
+                blue_count += 1
+        if red_count > (size//4 * 3):
+            score += 10
+        elif red_count > (size // 2):
+            score += 5
+        elif blue_count > (size // 4 * 3):
+            score -= 5
+        elif blue_count > (size // 2):
+            score -= 3
+        red_count = 0
+        blue_count = 0
+    return score
+
+def straightness_cols(board, size):
+    score = 0
+    red_num_occupancy_row = []
+    blue_num_occupancy_row = []
+    red_count = 0
+    blue_count = 0
+    for i in range(size):
+        for j in range(1, size-1):
+            value = board[j][i]
+            if value == RED_PLAYER:
+                red_count += 1
+            elif value == BLUE_PLAYER:
+                blue_count += 1
+        if red_count > (size//4 * 3):
+            score += 5
+        elif red_count > (size // 2):
+            score += 3
+        elif blue_count > (size // 4 * 3):
             score -= 10
         elif blue_count > (size // 2):
             score -= 5
@@ -193,8 +269,9 @@ def heuristic_function(current_board, size):
     2. 
     '''
     h1 = num_potential_connection_spot(current_board, size)
-    h2 = straightness(current_board, size)
-    return h1 + h2
+    h2 = straightness_row(current_board, size)
+    h3 = straightness_col(current_board,size)
+    return h1 + (h2 + h3) / 2
 
 #========= The Minimax method with alpha-beta pruning =========
 # http://aima.cs.berkeley.edu/python/games.html
