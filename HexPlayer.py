@@ -133,7 +133,7 @@ VALUE_BLUE = -1 # from integer side to integer side
 '''
 RED_PLAYER = 1
 BLUE_PLAYER = -1
-MAX_DEPTH = 2
+MAX_DEPTH = 4
 
 #========= The heuristic function and helper functions =========
 ##def closest_position(pos_L, pos_N):
