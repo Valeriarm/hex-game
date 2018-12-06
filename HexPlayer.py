@@ -219,7 +219,7 @@ def distribution_evenlly_penalty_score(red_num_occupancy_list, blue_num_occupanc
 		blue_min_list = blue_num_occupancy_list[-(length//4):]
 		score = 0
 		for i in range(len(red_max_list)):
-			score += (red_max_list[i] - red_min_list[i]) - (blue_max_list[i] - blue_min_list[i])
+    			score += (red_max_list[i] - red_min_list[i]) - (blue_max_list[i] - blue_min_list[i])
 		return score
 
 def straightness_row(board, size):
@@ -303,28 +303,30 @@ def heuristic_function(current_board, empty_position_dict, size):
     2. vulnerability
 	3. completeness
     '''
+    print_board(current_board, size)
     h0 = centerness(current_board, size) # 0
     h1 = num_potential_connection_spot(current_board, size) # 1
     h2 = neighbouring_factor(current_board, size) + bridging_factor(current_board, size) # 2
     h3 = straightness_row(current_board, size) + straightness_col(current_board,size)  # 3
+    print("heuristic_values:", h0, h1, h2, h3)
     return h0 + h1 + h2 + h3
 
 #========= The Minimax method with alpha-beta pruning =========
 # http://aima.cs.berkeley.edu/python/games.html
 def max_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, size, pos = None):
-    print("in max_value_pos with current pos:", pos)
+    # print("in max_value_pos with current pos:", pos)
     if (depth >= MAX_DEPTH or len(empty_position_dict) == 0):
-        print("terminate at 11 with pos:", pos)
+        # print("terminate at 11 with pos:", pos)
         return (heuristic_function(board, empty_position_dict, size), pos)
 
     v = -1.0e40 # neg infinity
 
     for potential_pos in list(empty_position_dict):
-        print("potential_pos_in_max:", potential_pos)
-        print("board_in_max:", board)
-        print("empty_positions in max:", empty_position_dict.keys())
+        # print("potential_pos_in_max:", potential_pos)
+        # print("board_in_max:", board)
+        # print("empty_positions in max:", empty_position_dict.keys())
         if not try_update_board(board, potential_pos, which_player, size):
-            print("terminate at 12 with v and pos:", v, pos)
+            # print("terminate at 12 with v and pos:", v, pos)
             return (v, pos)
         empty_position_dict.pop(potential_pos)
         v_from_min, pos_from_min = min_value_pos(board, empty_position_dict, alpha, beta, depth+1, -1 * which_player, size, potential_pos)
@@ -333,26 +335,26 @@ def max_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, 
             pos = pos_from_min
             # v = max(v, v_from_min)
         if v >= beta:
-            print("terminate at 13 with v and pos:", v, pos)
+            # print("terminate at 13 with v and pos:", v, pos)
             return (v, pos)
         alpha = max(alpha, v)
-    print("terminate at 14 with v and pos:", v, pos)
+    # print("terminate at 14 with v and pos:", v, pos)
     return (v, pos)
 
 def min_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, size, pos = None):
-    print("in min_value_pos with current pos:", pos)
+    # print("in min_value_pos with current pos:", pos)
     if (depth >= MAX_DEPTH or len(empty_position_dict) == 0):
-        print("terminate at 21 with pos:", pos)
+        # print("terminate at 21 with pos:", pos)
         return (heuristic_function(board, empty_position_dict, size), pos)
 
     v = 1.0e40 # pos infinity
 
     for potential_pos in list(empty_position_dict):
-        print("potential_pos_in_min:", potential_pos)
-        print("board_in_min:", board)
-        print("empty_positions in min:", empty_position_dict.keys())
+        # print("potential_pos_in_min:", potential_pos)
+        # print("board_in_min:", board)
+        # print("empty_positions in min:", empty_position_dict.keys())
         if not try_update_board(board, potential_pos, which_player, size):
-            print("terminate at 22 with v and pos:", v, pos)
+            # print("terminate at 22 with v and pos:", v, pos)
             return (v, pos)
         empty_position_dict.pop(potential_pos)
         v_from_max, pos_from_max = max_value_pos(board, empty_position_dict, alpha, beta, depth+1, -1 * which_player, size, potential_pos)
@@ -361,10 +363,10 @@ def min_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, 
             pos = pos_from_max
         # v = min(v, v_from_max)
         if v <= alpha:
-            print("terminate at 23 with v and pos:", v, pos)
+            # print("terminate at 23 with v and pos:", v, pos)
             return (v, pos)
         beta = min(beta, v)
-    print("terminate at 24 with v and pos:", v, pos)
+    # print("terminate at 24 with v and pos:", v, pos)
     return (v, pos)
 
 def alpha_beta_game_tree_search(board, size, empty_position_dict, which_player):
@@ -372,8 +374,8 @@ def alpha_beta_game_tree_search(board, size, empty_position_dict, which_player):
         (v, final) =  max_value_pos(board, empty_position_dict, -1.0e40, 1.0e40, 0, which_player, size)
     else:
         (v, final) =  min_value_pos(board, empty_position_dict, -1.0e40, 1.0e40, 0, which_player, size)
-    print("final:", final)
-    print("v:", v)
+    # print("final:", final)
+    # print("v:", v)
     return final
 
 #========= The all-in-one function =========
