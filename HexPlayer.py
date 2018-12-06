@@ -192,7 +192,7 @@ def distribution_evenlly_penalty_score(red_num_occupancy_list, blue_num_occupanc
 		blue_max_list = blue_num_occupancy_list[:length//4]
 		blue_min_list = blue_num_occupancy_list[-(length//4):]
 		score = 0
-		for i in range(red_max_list):
+		for i in range(len(red_max_list)):
 			score += (red_max_list[i] - red_min_list[i]) - (blue_max_list[i] - blue_min_list[i])
 		return score
 
@@ -214,7 +214,7 @@ def straightness_row(board, size):
         if blue_count > (size // 2):
             score += 5
         red_num_occupancy_row.append(red_count)
-        red_num_occupancy_row.append(blue_count)
+        blue_num_occupancy_row.append(blue_count)
         red_count = 0
         blue_count = 0
 	# if distribution too even
