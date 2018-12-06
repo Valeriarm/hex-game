@@ -22,6 +22,7 @@ import getopt
 import random
 import numpy as np
 import copy
+import statistics
 
 ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 LETTER2INT = {ALPHABET[i]:i for i in range(26)}
@@ -146,6 +147,22 @@ def neighbours(pos, size):
             neighbour_list.append(possible_pos)
     return neighbour_list
 
+def bridge_ends(pos, size):
+    # i is letter and j is number
+    (i, j) = pos
+    ends_list = []
+    possible_ends_list = [(i+2, j-1), (i+1, j-2), (i+1, j+1), (i-1, j-1), (i-1, j+2), (i-2, j+1)]
+    for possible_pos in possible_ends_list:
+        if (check_pos(possible_pos, size)):
+            ends_list.append(possible_pos)
+    return ends_list
+
+def bridging_factor(board, size):
+	pass
+
+def neighbouring_factor(board, size):
+	pass
+
 def num_potential_connection_spot(board, size):
     # the average flexibility
     score = 0
@@ -158,9 +175,27 @@ def num_potential_connection_spot(board, size):
                 for n in neighbours_list:
                     if board[n[0]][n[1]] == 0:
                         score += current_player
-    print("heuristic score:", score)
     return score
 
+def distribution_evenlly_penalty_score(red_num_occupancy_list, blue_num_occupancy_list):
+	red_num_occupancy_list.sort()
+	blue_num_occupancy_list.sort() # small to large
+	len = len(red_num_occupancy_list)
+	if len != len(blue_num_occupancy_list):
+		print("WTF")
+		sys.exit(2)
+
+	if len(red_num_occupancy_list) <= 3:
+		return (red_num_occupancy_list[-1] - red_num_occupancy_list[0]) - (blue_num_occupancy_list[-1] - blue_num_occupancy_list[0])
+	else:
+		red_max_list = red_num_occupancy_list[:len//4]
+		red_min_list = red_num_occupancy_list[-(len//4):]
+		blue_max_list = blue_num_occupancy_list[:len//4]
+		blue_min_list = blue_num_occupancy_list[-(len//4):]
+		score = 0
+		for i in range(red_max_list):
+			score += (red_max_list[i] - red_min_list[i]) - (blue_max_list[i] - blue_min_list[i])
+		return score
 
 def straightness_row(board, size):
     score = 0
@@ -175,22 +210,23 @@ def straightness_row(board, size):
                 red_count += 1
             elif value == BLUE_PLAYER:
                 blue_count += 1
-        if red_count > (size//4 * 3):
-            score += 10
-        elif red_count > (size // 2):
+        if red_count > (size // 3):
             score += 5
-        elif blue_count > (size // 4 * 3):
-            score -= 5
-        elif blue_count > (size // 2):
-            score -= 3
-        red_count = 0
+        if blue_count > (size // 2):
+            score += 5
+		red_num_occupancy_col.append(red_count)
+		blue_num_occupancy_col.append(blue_count)
+		red_count = 0
         blue_count = 0
-    return score
+	# if distribution too even
+	score_evenness = distribution_evenlly_penalty_score(red_num_occupancy_row, blue_num_occupancy_row)
+    return score + score_evenness
 
 def straightness_col(board, size):
+	# BLUE should follow col
     score = 0
-    red_num_occupancy_row = []
-    blue_num_occupancy_row = []
+    red_num_occupancy_col = []
+    blue_num_occupancy_col = []
     red_count = 0
     blue_count = 0
     for i in range(size):
@@ -200,78 +236,31 @@ def straightness_col(board, size):
                 red_count += 1
             elif value == BLUE_PLAYER:
                 blue_count += 1
-        if red_count > (size//4 * 3):
-            score += 5
-        elif red_count > (size // 2):
-            score += 3
-        elif blue_count > (size // 4 * 3):
-            score -= 10
-        elif blue_count > (size // 2):
+        if red_count > (size // 2):
             score -= 5
+        if blue_count > (size // 3):
+            score -= 5
+		red_num_occupancy_col.append(red_count)
+		blue_num_occupancy_col.append(blue_count)
         red_count = 0
         blue_count = 0
-    return score
+	# if distribution too even
+	score_evenness = distribution_evenlly_penalty_score(red_num_occupancy_col, blue_num_occupancy_col)
+    return score + score_evenness
 
-def straightness_rows(board, size):
-    score = 0
-    red_num_occupancy_row = []
-    blue_num_occupancy_row = []
-    red_count = 0
-    blue_count = 0
-    for i in range(1, size-1):
-        for j in range(size):
-            value = board[i][j]
-            if value == RED_PLAYER:
-                red_count += 1
-            elif value == BLUE_PLAYER:
-                blue_count += 1
-        if red_count > (size//4 * 3):
-            score += 10
-        elif red_count > (size // 2):
-            score += 5
-        elif blue_count > (size // 4 * 3):
-            score -= 5
-        elif blue_count > (size // 2):
-            score -= 3
-        red_count = 0
-        blue_count = 0
-    return score
-
-def straightness_cols(board, size):
-    score = 0
-    red_num_occupancy_row = []
-    blue_num_occupancy_row = []
-    red_count = 0
-    blue_count = 0
-    for i in range(size):
-        for j in range(1, size-1):
-            value = board[j][i]
-            if value == RED_PLAYER:
-                red_count += 1
-            elif value == BLUE_PLAYER:
-                blue_count += 1
-        if red_count > (size//4 * 3):
-            score += 5
-        elif red_count > (size // 2):
-            score += 3
-        elif blue_count > (size // 4 * 3):
-            score -= 10
-        elif blue_count > (size // 2):
-            score -= 5
-        red_count = 0
-        blue_count = 0
-    return score
-
-def heuristic_function(current_board, size):
+def heuristic_function(current_board, empty_position_dict, size):
     '''
+	RED is MAX
     things I want to consider:
-    1. average flexibity RED is MAX
-    2. 
+	0. centerness
+    1. liberty
+    2. vulnerability
+	3. completeness
     '''
     h1 = num_potential_connection_spot(current_board, size)
     h2 = straightness_row(current_board, size)
     h3 = straightness_col(current_board,size)
-    return h1 + (h2 + h3) / 2
+    return h1 + h2 + h3
 
 #========= The Minimax method with alpha-beta pruning =========
 # http://aima.cs.berkeley.edu/python/games.html
@@ -279,7 +268,7 @@ def max_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, 
     print("in max_value_pos with current pos:", pos)
     if (depth >= MAX_DEPTH or len(empty_position_dict) == 0):
         print("terminate at 11 with pos:", pos)
-        return (heuristic_function(board, size), pos)
+        return (heuristic_function(board, empty_position_dict, size), pos)
 
     v = -1.0e40 # neg infinity
 
