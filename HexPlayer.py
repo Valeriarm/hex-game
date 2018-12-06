@@ -328,7 +328,10 @@ def max_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, 
         if not try_update_board(board, potential_pos, which_player, size):
             # print("terminate at 12 with v and pos:", v, pos)
             return (v, pos)
-        empty_position_dict.pop(potential_pos)
+        try:
+            empty_position_dict.pop(potential_pos)
+        except:
+            break
         v_from_min, pos_from_min = min_value_pos(board, empty_position_dict, alpha, beta, depth+1, -1 * which_player, size, potential_pos)
         if (v_from_min > v):
             v = v_from_min
@@ -358,7 +361,10 @@ def min_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, 
         if not try_update_board(board, potential_pos, which_player, size):
             # print("terminate at 22 with v and pos:", v, pos)
             return (v, pos)
-        empty_position_dict.pop(potential_pos)
+        try:
+            empty_position_dict.pop(potential_pos)
+        except:
+            break
         v_from_max, pos_from_max = max_value_pos(board, empty_position_dict, alpha, beta, depth+1, -1 * which_player, size, potential_pos)
         if (v_from_max < v):
             v = v_from_max
