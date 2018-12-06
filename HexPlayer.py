@@ -158,10 +158,34 @@ def bridge_ends(pos, size):
     return ends_list
 
 def bridging_factor(board, size):
-	pass
+    score = 0
+    for i in range(size):
+        for j in range(size):
+            current_player = board[i][j]
+            if current_player != 0:
+                bridge_ends_list = bridge_ends((i,j), size)
+                for n in bridge_ends_list:
+                    val = board[n[0]][n[1]]
+                    if val == current_player:
+                        score += 3 * current_player
+                    elif val == -1 * current_player:
+                        score += -5 * current_player 
+    return score
 
 def neighbouring_factor(board, size):
-	pass
+    score = 0
+    for i in range(size):
+        for j in range(size):
+            current_player = board[i][j]
+            if current_player != 0:
+                bridge_ends_list = bridge_ends((i,j), size)
+                for n in bridge_ends_list:
+                    val = board[n[0]][n[1]]
+                    if val == current_player:
+                        score += 3 * current_player
+                    elif val == -1 * current_player:
+                        score += -5 * current_player 
+    return score
 
 def num_potential_connection_spot(board, size):
     # the average flexibility
@@ -171,7 +195,9 @@ def num_potential_connection_spot(board, size):
             current_player = board[i][j]
             if current_player != 0:
                 neighbours_list = neighbours((i,j), size)
-                for n in neighbours_list:
+                bridge_ends_list = neighbours((i,j), size)
+                list_all = neighbours_list + bridge_ends_list
+                for n in list_all:
                     if board[n[0]][n[1]] == 0:
                         score += current_player
     return score
@@ -247,6 +273,27 @@ def straightness_col(board, size):
     score_evenness = distribution_evenlly_penalty_score(red_num_occupancy_col, blue_num_occupancy_col)
     return score + score_evenness
 
+def centerness(board, size):
+    score = 0
+    center = (size // 2, size // 2)
+    center_val = board[size // 2][size // 2]
+    if center_val != 0:
+        score += 50 * center_val
+        c_neighbours = neighbours(center, size)
+        count = 0 # num_red - num_blue
+        for (pos_i, pos_j) in c_neighbours:
+            value = board[pos_i][pos_j]
+            score += 3 * value
+            if (value == RED_PLAYER):
+                count += 1
+            elif (value == BLUE_PLAYER):
+                count -= 1
+        if count >= 4:
+            score -= 20 # unnecessarily too many reds
+        elif count <= -4:
+            score += 20 # unnecessarily too many blues
+    return score
+
 def heuristic_function(current_board, empty_position_dict, size):
     '''
 	RED is MAX
@@ -256,10 +303,11 @@ def heuristic_function(current_board, empty_position_dict, size):
     2. vulnerability
 	3. completeness
     '''
-    h1 = num_potential_connection_spot(current_board, size)
-    h2 = straightness_row(current_board, size)
-    h3 = straightness_col(current_board,size)
-    return h1 + h2 + h3
+    h0 = centerness(current_board, size) # 0
+    h1 = num_potential_connection_spot(current_board, size) # 1
+    h2 = neighbouring_factor(current_board, size) + bridging_factor(current_board, size) # 2
+    h3 = straightness_row(current_board, size) + straightness_col(current_board,size)  # 3
+    return h0 + h1 + h2 + h3
 
 #========= The Minimax method with alpha-beta pruning =========
 # http://aima.cs.berkeley.edu/python/games.html
