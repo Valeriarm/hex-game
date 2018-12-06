@@ -355,7 +355,7 @@ def min_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, 
         # print("empty_positions in min:", empty_position_dict.keys())
         if not try_update_board(board, potential_pos, which_player, size):
             # print("terminate at 22 with v and pos:", v, pos)
-            break
+            return (v, pos)
         empty_position_dict.pop(potential_pos)
         v_from_max, pos_from_max = max_value_pos(board, empty_position_dict, alpha, beta, depth+1, -1 * which_player, size, potential_pos)
         if (v_from_max < v):
@@ -364,7 +364,7 @@ def min_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, 
         # v = min(v, v_from_max)
         if v <= alpha:
             # print("terminate at 23 with v and pos:", v, pos)
-            return (v, pos)
+            break
         beta = min(beta, v)
     # print("terminate at 24 with v and pos:", v, pos)
     return (v, pos)
