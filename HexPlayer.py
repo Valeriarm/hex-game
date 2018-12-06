@@ -134,7 +134,7 @@ VALUE_BLUE = -1 # from integer side to integer side
 '''
 RED_PLAYER = 1
 BLUE_PLAYER = -1
-MAX_DEPTH = 8
+MAX_DEPTH = 3
 
 #========= The heuristic function and helper functions =========
 def neighbours(pos, size):
