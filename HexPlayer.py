@@ -303,12 +303,12 @@ def heuristic_function(current_board, empty_position_dict, size):
     2. vulnerability
 	3. completeness
     '''
-    print_board(current_board, size)
+    # print_board(current_board, size)
     h0 = centerness(current_board, size) # 0
     h1 = num_potential_connection_spot(current_board, size) # 1
     h2 = neighbouring_factor(current_board, size) + bridging_factor(current_board, size) # 2
     h3 = straightness_row(current_board, size) + straightness_col(current_board,size)  # 3
-    print("heuristic_values:", h0, h1, h2, h3)
+    # print("heuristic_values:", h0, h1, h2, h3)
     return h0 + h1 + h2 + h3
 
 #========= The Minimax method with alpha-beta pruning =========
