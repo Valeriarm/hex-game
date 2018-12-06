@@ -170,7 +170,6 @@ def num_potential_connection_spot(board, size):
         for j in range(size):
             current_player = board[i][j]
             if current_player != 0:
-                current_enemy = -1 * current_player
                 neighbours_list = neighbours((i,j), size)
                 for n in neighbours_list:
                     if board[n[0]][n[1]] == 0:
@@ -180,18 +179,18 @@ def num_potential_connection_spot(board, size):
 def distribution_evenlly_penalty_score(red_num_occupancy_list, blue_num_occupancy_list):
 	red_num_occupancy_list.sort()
 	blue_num_occupancy_list.sort() # small to large
-	len = len(red_num_occupancy_list)
-	if len != len(blue_num_occupancy_list):
+	length = len(red_num_occupancy_list)
+	if length != len(blue_num_occupancy_list):
 		print("WTF")
 		sys.exit(2)
 
 	if len(red_num_occupancy_list) <= 3:
 		return (red_num_occupancy_list[-1] - red_num_occupancy_list[0]) - (blue_num_occupancy_list[-1] - blue_num_occupancy_list[0])
 	else:
-		red_max_list = red_num_occupancy_list[:len//4]
-		red_min_list = red_num_occupancy_list[-(len//4):]
-		blue_max_list = blue_num_occupancy_list[:len//4]
-		blue_min_list = blue_num_occupancy_list[-(len//4):]
+		red_max_list = red_num_occupancy_list[:length//4]
+		red_min_list = red_num_occupancy_list[-(length//4):]
+		blue_max_list = blue_num_occupancy_list[:length//4]
+		blue_min_list = blue_num_occupancy_list[-(length//4):]
 		score = 0
 		for i in range(red_max_list):
 			score += (red_max_list[i] - red_min_list[i]) - (blue_max_list[i] - blue_min_list[i])
@@ -214,12 +213,12 @@ def straightness_row(board, size):
             score += 5
         if blue_count > (size // 2):
             score += 5
-		red_num_occupancy_col.append(red_count)
-		blue_num_occupancy_col.append(blue_count)
-		red_count = 0
+        red_num_occupancy_row.append(red_count)
+        red_num_occupancy_row.append(blue_count)
+        red_count = 0
         blue_count = 0
 	# if distribution too even
-	score_evenness = distribution_evenlly_penalty_score(red_num_occupancy_row, blue_num_occupancy_row)
+    score_evenness = distribution_evenlly_penalty_score(red_num_occupancy_row, blue_num_occupancy_row)
     return score + score_evenness
 
 def straightness_col(board, size):
@@ -240,12 +239,12 @@ def straightness_col(board, size):
             score -= 5
         if blue_count > (size // 3):
             score -= 5
-		red_num_occupancy_col.append(red_count)
-		blue_num_occupancy_col.append(blue_count)
+        red_num_occupancy_col.append(red_count)
+        blue_num_occupancy_col.append(blue_count)
         red_count = 0
         blue_count = 0
 	# if distribution too even
-	score_evenness = distribution_evenlly_penalty_score(red_num_occupancy_col, blue_num_occupancy_col)
+    score_evenness = distribution_evenlly_penalty_score(red_num_occupancy_col, blue_num_occupancy_col)
     return score + score_evenness
 
 def heuristic_function(current_board, empty_position_dict, size):
@@ -296,7 +295,7 @@ def min_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, 
     print("in min_value_pos with current pos:", pos)
     if (depth >= MAX_DEPTH or len(empty_position_dict) == 0):
         print("terminate at 21 with pos:", pos)
-        return (heuristic_function(board, size), pos)
+        return (heuristic_function(board, empty_position_dict, size), pos)
 
     v = 1.0e40 # pos infinity
 
