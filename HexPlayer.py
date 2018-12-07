@@ -20,7 +20,6 @@ import sys
 import time
 import getopt
 import random
-import numpy as np
 import copy
 import statistics
 
@@ -134,7 +133,7 @@ VALUE_BLUE = -1 # from integer side to integer side
 '''
 RED_PLAYER = 1
 BLUE_PLAYER = -1
-MAX_DEPTH = 2
+MAX_DEPTH = 3
 
 #========= The heuristic function and helper functions =========
 def neighbours(pos, size):
@@ -262,9 +261,9 @@ def straightness_col(board, size):
             elif value == BLUE_PLAYER:
                 blue_count += 1
         if red_count > (size // 2):
-            score -= 5
-        if blue_count > (size // 3):
-            score -= 5
+            score -= 5 * red_count
+        if blue_count > (size // 4):
+            score -= 5 * blue_count
         red_num_occupancy_col.append(red_count)
         blue_num_occupancy_col.append(blue_count)
         red_count = 0
@@ -294,7 +293,54 @@ def centerness(board, size):
             score += 20 # unnecessarily too many blues
     return score
 
-def heuristic_function(current_board, empty_position_dict, size):
+def good_half_neighbour(which_player, pos, size):
+    # i is letter and j is number
+    (i, j) = pos
+    neighbour_list = []
+    if which_player == RED_PLAYER:
+        possible_pos_list = [ (i-1, j+1), (i, j+1), (i+1, j) ] # red, left to right
+    elif which_player == BLUE_PLAYER:
+        possible_pos_list = [ (i+1, j-1), (i+1, j), (i, j+1) ] # blue, up to down
+    for possible_pos in possible_pos_list:
+        if (check_pos(possible_pos, size)):
+            neighbour_list.append(possible_pos)
+    return neighbour_list
+
+def track_path_len(board, which_player, pos, size):
+    path_len = 1
+    i = pos[0]
+    j = pos[1]
+    next_i = i
+    next_j = j
+    while(check_pos(next_i,next_j)):
+        for good_neighbour in good_half_neighbour(which_player, (next_i, next_j), size):
+            if board[good_neighbour[0]][good_neighbour[1]] == which_player:
+                next_i = good_neighbour[0]
+                next_j = good_neighbour[1]
+                path_len += 1
+                break
+    return path_len
+
+
+def connect_degree(which_player, board, size):
+    score = 0
+    if which_player == RED_PLAYER:
+        for i in range(size):
+            if board[i][0] == RED_PLAYER:
+                path_length = track_path_len(board, which_player, (i, 0), size)
+                score += 10 * path_length
+    if which_player == BLUE_PLAYER:
+        for i in range(size):
+            if board[0][i] == BLUE_PLAYER:
+                path_length = track_path_len(board, which_player, (0, i), size)
+                score -= 10 * path_length
+    return score
+            
+
+def even_over_each_row_col(which_player, board, size):
+    pass
+
+def heuristic_function(current_board, empty_position_dict, size, which_player):
     '''
 	RED is MAX
     things I want to consider:
@@ -304,12 +350,17 @@ def heuristic_function(current_board, empty_position_dict, size):
 	3. completeness
     '''
     # print_board(current_board, size)
-    h0 = centerness(current_board, size) # 0
-    h1 = num_potential_connection_spot(current_board, size) # 1
-    h2 = neighbouring_factor(current_board, size) + bridging_factor(current_board, size) # 2
-    h3 = straightness_row(current_board, size) + straightness_col(current_board,size)  # 3
-    # print("heuristic_values:", h3)
-    return h0+h1+h2+h3
+    # h0 = centerness(current_board, size) # 0
+    h0 = 0
+    h1 = connect_degree(which_player, current_board, size) # 1
+    # h1 = 0
+    # h2 = neighbouring_factor(current_board, size) + bridging_factor(current_board, size) # 2
+    h2 = 0
+    # h3 = straightness_row(current_board, size) + straightness_col(current_board,size)  # 3
+    h3 = 0
+    value = h0 + h1 + h2 + h3
+    # print("heuristic_value", value)
+    return value
 
 #========= The Minimax method with alpha-beta pruning =========
 # http://aima.cs.berkeley.edu/python/games.html
@@ -317,7 +368,7 @@ def max_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, 
     # print("in max_value_pos with current pos:", pos)
     if (depth >= MAX_DEPTH or len(empty_position_dict) == 0):
         # print("terminate at 11 with pos:", pos)
-        return (heuristic_function(board, empty_position_dict, size), pos)
+        return (heuristic_function(board, empty_position_dict, size, which_player), pos)
 
     v = -1.0e40 # neg infinity
     # count_iter = 0
@@ -355,7 +406,7 @@ def min_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, 
     # print("in min_value_pos with current pos:", pos)
     if (depth >= MAX_DEPTH or len(empty_position_dict) == 0):
         # print("terminate at 21 with pos:", pos)
-        return (heuristic_function(board, empty_position_dict, size), pos)
+        return (heuristic_function(board, empty_position_dict, size, which_player), pos)
 
     v = 1.0e40 # pos infinity
 
