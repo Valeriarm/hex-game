@@ -133,7 +133,7 @@ VALUE_BLUE = -1 # from integer side to integer side
 '''
 RED_PLAYER = 1
 BLUE_PLAYER = -1
-MAX_DEPTH = 3
+MAX_DEPTH = 2
 
 #========= The heuristic function and helper functions =========
 def neighbours(pos, size):
@@ -397,7 +397,7 @@ def heuristic_function(current_board, empty_position_dict, size, which_player):
     # h2 = 0
     h3 = straightness_row(current_board, size) + straightness_col(current_board,size)  # 3
     # h3 = 0
-    value = 1.5 * h0 + 2 * h1 + 1.5 * h2 + 2 * h3
+    value = 1.5 * h0 + 2 * h1 + 1 * h2 + 2 * h3
     # print("heuristic_value", value)
     return value
 
