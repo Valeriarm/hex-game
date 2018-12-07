@@ -321,19 +321,57 @@ def track_path_len(board, which_player, pos, size):
                 break
     return path_len
 
+def good_half_neighbour_opposite_direction(which_player, pos, size):
+    # i is letter and j is number
+    (i, j) = pos
+    neighbour_list = []
+    if which_player == RED_PLAYER:
+        possible_pos_list = [ (i-1, j), (i, j-1), (i+1, j-1) ] # red, right to left
+    elif which_player == BLUE_PLAYER:
+        possible_pos_list = [ (i-1, j), (i-1, j+1), (i, j-1) ] # blue, down to up
+    for possible_pos in possible_pos_list:
+        if (check_pos(possible_pos, size)):
+            neighbour_list.append(possible_pos)
+    return neighbour_list
+
+
+def track_path_len_opposite_direction(board, which_player, pos, size):
+    path_len = 1
+    i = pos[0]
+    j = pos[1]
+    next_i = i
+    next_j = j
+    while(check_pos(next_i,next_j)):
+        for good_neighbour in good_half_neighbour_opposite_direction(which_player, (next_i, next_j), size):
+            if board[good_neighbour[0]][good_neighbour[1]] == which_player:
+                next_i = good_neighbour[0]
+                next_j = good_neighbour[1]
+                path_len += 1
+                break
+    return path_len
 
 def connect_degree(which_player, board, size):
     score = 0
+    path_length_1 = 0
+    path_length_2 = 0
     if which_player == RED_PLAYER:
+        if board[size // 2][0] == RED_PLAYER:
+            score += 50
         for i in range(size):
             if board[i][0] == RED_PLAYER:
-                path_length = track_path_len(board, which_player, (i, 0), size)
-                score += 10 * path_length
+                path_length_1 = track_path_len(board, which_player, (i, 0), size)
+            if board[i][size-1] == RED_PLAYER:
+                path_length_2 = track_path_len_opposite_direction(board, which_player, (i, size-1), size)
+            score += 10 * max(path_length_1, path_length_2)
     if which_player == BLUE_PLAYER:
+        if board[0][size // 2] == RED_PLAYER:
+            score -= 50
         for i in range(size):
             if board[0][i] == BLUE_PLAYER:
-                path_length = track_path_len(board, which_player, (0, i), size)
-                score -= 10 * path_length
+                path_length_1 = track_path_len(board, which_player, (0, i), size)
+            if board[size-1][i] == BLUE_PLAYER:
+                path_length_2 = track_path_len_opposite_direction(board, which_player, (size-1, i), size)
+            score -= 10 * max(path_length_1, path_length_2)
     return score
             
 
