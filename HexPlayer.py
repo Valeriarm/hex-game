@@ -134,7 +134,7 @@ VALUE_BLUE = -1 # from integer side to integer side
 '''
 RED_PLAYER = 1
 BLUE_PLAYER = -1
-MAX_DEPTH = 4
+MAX_DEPTH = 2
 
 #========= The heuristic function and helper functions =========
 def neighbours(pos, size):
@@ -303,13 +303,13 @@ def heuristic_function(current_board, empty_position_dict, size):
     2. vulnerability
 	3. completeness
     '''
-    print_board(current_board, size)
-    # h0 = centerness(current_board, size) # 0
-    # h1 = num_potential_connection_spot(current_board, size) # 1
-    # h2 = neighbouring_factor(current_board, size) + bridging_factor(current_board, size) # 2
+    # print_board(current_board, size)
+    h0 = centerness(current_board, size) # 0
+    h1 = num_potential_connection_spot(current_board, size) # 1
+    h2 = neighbouring_factor(current_board, size) + bridging_factor(current_board, size) # 2
     h3 = straightness_row(current_board, size) + straightness_col(current_board,size)  # 3
-    print("heuristic_values:", h3)
-    return h3
+    # print("heuristic_values:", h3)
+    return h0+h1+h2+h3
 
 #========= The Minimax method with alpha-beta pruning =========
 # http://aima.cs.berkeley.edu/python/games.html
@@ -320,10 +320,10 @@ def max_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, 
         return (heuristic_function(board, empty_position_dict, size), pos)
 
     v = -1.0e40 # neg infinity
-    count_iter = 0
+    # count_iter = 0
     for potential_pos in list(empty_position_dict):
-        count_iter += 1
-        print("----\n", count_iter)
+        #count_iter += 1
+        #print("----\n", count_iter)
         # print("potential_pos_in_max:", potential_pos)
         # print("board_in_max:", board)
         # print("empty_positions in max:", empty_position_dict.keys())
