@@ -388,15 +388,16 @@ def heuristic_function(current_board, empty_position_dict, size, which_player):
 	3. completeness
     '''
     # print_board(current_board, size)
-    # h0 = centerness(current_board, size) # 0
-    h0 = 0
+    h0 = centerness(current_board, size) # 0
+    # h0 = 0
     h1 = connect_degree(which_player, current_board, size) # 1
     # h1 = 0
     # h2 = neighbouring_factor(current_board, size) + bridging_factor(current_board, size) # 2
-    h2 = 0
+    h2 = bridging_factor(current_board, size) # 2
+    # h2 = 0
     h3 = straightness_row(current_board, size) + straightness_col(current_board,size)  # 3
     # h3 = 0
-    value = h0 + h1 + h2 + h3
+    value = 1.5 * h0 + 2 * h1 + 1.5 * h2 + 2 * h3
     # print("heuristic_value", value)
     return value
 
