@@ -341,6 +341,8 @@ def max_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, 
             # v = max(v, v_from_min)
         if v >= beta:
             # print("terminate at 13 with v and pos:", v, pos)
+            board[potential_pos[0]][potential_pos[1]] = VALUE_EMPTY
+            empty_position_dict[potential_pos] = VALUE_EMPTY
             continue
         alpha = max(alpha, v)
         # retract pos?
@@ -375,6 +377,8 @@ def min_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, 
         # v = min(v, v_from_max)
         if v <= alpha:
             # print("terminate at 23 with v and pos:", v, pos)
+            board[potential_pos[0]][potential_pos[1]] = VALUE_EMPTY
+            empty_position_dict[potential_pos] = VALUE_EMPTY
             continue
         beta = min(beta, v)
         # retract pos?
