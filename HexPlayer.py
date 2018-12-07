@@ -320,8 +320,10 @@ def max_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, 
         return (heuristic_function(board, empty_position_dict, size), pos)
 
     v = -1.0e40 # neg infinity
-
+    count_iter = 0
     for potential_pos in list(empty_position_dict):
+        count_iter += 1
+        print("----\n", count_iter)
         # print("potential_pos_in_max:", potential_pos)
         # print("board_in_max:", board)
         # print("empty_positions in max:", empty_position_dict.keys())
