@@ -134,7 +134,7 @@ VALUE_BLUE = -1 # from integer side to integer side
 '''
 RED_PLAYER = 1
 BLUE_PLAYER = -1
-MAX_DEPTH = 10
+MAX_DEPTH = 4
 
 #========= The heuristic function and helper functions =========
 def neighbours(pos, size):
@@ -341,10 +341,11 @@ def max_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, 
             # v = max(v, v_from_min)
         if v >= beta:
             # print("terminate at 13 with v and pos:", v, pos)
-            break
+            continue
         alpha = max(alpha, v)
         # retract pos?
         board[potential_pos[0]][potential_pos[1]] = VALUE_EMPTY
+        empty_position_dict[potential_pos] = VALUE_EMPTY
     # print("terminate at 14 with v and pos:", v, pos)
     return (v, pos)
 
@@ -374,10 +375,11 @@ def min_value_pos(board, empty_position_dict, alpha, beta, depth, which_player, 
         # v = min(v, v_from_max)
         if v <= alpha:
             # print("terminate at 23 with v and pos:", v, pos)
-            break
+            continue
         beta = min(beta, v)
         # retract pos?
         board[potential_pos[0]][potential_pos[1]] = VALUE_EMPTY
+        empty_position_dict[potential_pos] = VALUE_EMPTY
     # print("terminate at 24 with v and pos:", v, pos)
     return (v, pos)
 
