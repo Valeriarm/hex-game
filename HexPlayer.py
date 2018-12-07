@@ -394,7 +394,7 @@ def heuristic_function(current_board, empty_position_dict, size, which_player):
     # h1 = 0
     # h2 = neighbouring_factor(current_board, size) + bridging_factor(current_board, size) # 2
     h2 = 0
-    # h3 = straightness_row(current_board, size) + straightness_col(current_board,size)  # 3
+    h3 = straightness_row(current_board, size) + straightness_col(current_board,size)  # 3
     h3 = 0
     value = h0 + h1 + h2 + h3
     # print("heuristic_value", value)
