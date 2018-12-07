@@ -218,7 +218,7 @@ def distribution_evenlly_penalty_score(red_num_occupancy_list, blue_num_occupanc
 		blue_min_list = blue_num_occupancy_list[-(length//4):]
 		score = 0
 		for i in range(len(red_max_list)):
-    			score += (red_max_list[i] - red_min_list[i]) - (blue_max_list[i] - blue_min_list[i])
+    			score += 20 * (red_max_list[i] - red_min_list[i]) - (blue_max_list[i] - blue_min_list[i])
 		return score
 
 def straightness_row(board, size):
@@ -395,7 +395,7 @@ def heuristic_function(current_board, empty_position_dict, size, which_player):
     # h2 = neighbouring_factor(current_board, size) + bridging_factor(current_board, size) # 2
     h2 = 0
     h3 = straightness_row(current_board, size) + straightness_col(current_board,size)  # 3
-    h3 = 0
+    # h3 = 0
     value = h0 + h1 + h2 + h3
     # print("heuristic_value", value)
     return value
